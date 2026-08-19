@@ -21,7 +21,7 @@ button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;pad
 .dayoff{background:#fef2f2}.holiday{background:#eff6ff}
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"></head>
 <body>
-<header><h1>Turnistica Pro</h1><small>v6 • calendario mensile</small></header>
+<header><h1>Turnistica Pro</h1><small>v6.1 • calendario mensile</small></header>
 <nav id="nav">
 <button class="active" data-v="turnistica">Turnistica</button><button data-v="dipendenti">Dipendenti</button><button data-v="assenze">Assenze</button><button data-v="turni">Turni</button><button data-v="fabbisogno">Fabbisogno</button><button data-v="impostazioni">Impostazioni</button>
 </nav>
@@ -49,7 +49,7 @@ button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;pad
 <div><label>Riposo minimo tra turni (ore)</label><input id="rest" type="number" min="0" max="24" step=".5"></div>
 </div><div class="actions"><button class="primary" id="saveSettings">Salva</button></div></div>
 <div class="card"><h3>Regole v5</h3><ul><li>Ferie/permessi bloccano automaticamente l'assegnazione.</li><li>Le note "no domenica" e "no sabato" vengono rispettate.</li><li>Il generatore cerca di non superare le ore contrattuali.</li><li>Il generatore cerca di distribuire mattine e pomeriggi.</li><li>Controlla il riposo minimo tra giorni consecutivi.</li></ul></div></section>
-</main><div id="toast" class="toast"></div>
+<div class="card"><div class="small">Turnistica Pro v6.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
 <script>
 const KEY="turnistica_pro_v5";
 const DEF={employees:[
@@ -112,7 +112,7 @@ function generate(){
  // Fill contracts with legal/availability-aware work
  data.employees.forEach((e,i)=>{let target=+e.hours||0;if(!target)return;let guard=0;while(worked(i)<target&&guard++<30){let best=null;for(let di=0;di<7;di++){if(ds[di].getDay()===+data.settings.closed||data.schedule[i].days[di]!=="R")continue;for(let s of work){if(worked(i)+(s.hours||0)>target||!eligible(i,di,s))continue;let count=data.schedule[i].days.filter(x=>x===s.code).length;let score=count*3+di*.05;if(!best||score<best.score)best={di,s,score}}}if(!best)break;data.schedule[i].days[best.di]=best.s.code}});
  save();renderCalendar();$("diagnostics").innerHTML=errors.length?`<div class=alert><b>Attenzione: copertura incompleta.</b><br>${[...new Set(errors)].slice(0,20).map(esc).join("<br>")}</div>`:`<div class=ok><b>Generazione completata.</b> I requisiti sono coperti con le disponibilità impostate.</div>`;toast("Turnistica generata")}
-$("generate").onclick=generate;$("week").onchange=renderCalendar;
+// v6.1: gestione mensile; rimossi i vecchi controlli settimanali
 $("export").onclick=()=>{
  let ds=monthDates(),lines=[["Dipendente","Ruolo","Ore contratto",...ds.map(d=>d.toLocaleDateString("it-IT",{weekday:"short",day:"2-digit",month:"2-digit"})),"Ore mese","Target mensile"].join(";")];
  data.employees.forEach((e,i)=>{let vals=ds.map(d=>{let z=data.schedule[i]?.dates?.find(x=>x.date===iso(d));return z?.shift||""}),h=vals.reduce((a,c)=>a+(sh(c)?.hours||0),0);lines.push([e.name,e.role,e.hours,...vals,h,e.hours?((+e.hours||0)*4.345).toFixed(1):""].join(";"))});
