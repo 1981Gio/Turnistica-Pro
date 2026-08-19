@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111827">
-<title>Turnistica Pro v6</title>
+<title>Turnistica Pro v6.3</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:5}h1{margin:0;font-size:22px}header small{opacity:.75}
@@ -21,13 +21,13 @@ button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;pad
 .dayoff{background:#fef2f2}.holiday{background:#eff6ff}
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"></head>
 <body>
-<header><h1>Turnistica Pro</h1><small>v6.1 • calendario mensile</small></header>
+<header><h1>Turnistica Pro</h1><small>v6.3 • turni visualizzati per orario</small></header>
 <nav id="nav">
 <button class="active" data-v="turnistica">Turnistica</button><button data-v="dipendenti">Dipendenti</button><button data-v="assenze">Assenze</button><button data-v="turni">Turni</button><button data-v="fabbisogno">Fabbisogno</button><button data-v="impostazioni">Impostazioni</button>
 </nav>
 <main>
 <section id="turnistica" class="view active">
-<div class="card"><h2>Turnistica</h2><div class="grid g2"><div><label>Mese</label><input id="month" type="month"></div><div class="actions"><button class="primary" id="generateMonth">Genera mese</button><button class="secondary" id="export">Esporta per Numbers</button></div></div><div class="actions"><button class="secondary" id="prevMonth">‹ Mese precedente</button><button class="secondary" id="nextMonth">Mese successivo ›</button></div>
+<div class="card"><h2>Turnistica</h2><div class="grid g2"><div><label>Mese</label><input id="month" type="month"></div><div class="actions"><button class="primary" id="generateMonth" type="button">Genera mese</button><button class="secondary" id="export">Esporta per Numbers</button></div></div><div class="actions"><button class="secondary" id="prevMonth">‹ Mese precedente</button><button class="secondary" id="nextMonth">Mese successivo ›</button></div>
 <p class="small">Il generatore considera ruolo, ore contrattuali, assenze, riposo minimo e rotazione dei turni.</p></div>
 <div class="card" id="summary"></div><div class="card" id="diagnostics"></div><div class="card"><h3 id="monthTitle"></h3><div class="scroll"><table id="calendar"></table></div></div>
 </section>
@@ -49,13 +49,13 @@ button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;pad
 <div><label>Riposo minimo tra turni (ore)</label><input id="rest" type="number" min="0" max="24" step=".5"></div>
 </div><div class="actions"><button class="primary" id="saveSettings">Salva</button></div></div>
 <div class="card"><h3>Regole v5</h3><ul><li>Ferie/permessi bloccano automaticamente l'assegnazione.</li><li>Le note "no domenica" e "no sabato" vengono rispettate.</li><li>Il generatore cerca di non superare le ore contrattuali.</li><li>Il generatore cerca di distribuire mattine e pomeriggi.</li><li>Controlla il riposo minimo tra giorni consecutivi.</li></ul></div></section>
-<div class="card"><div class="small">Turnistica Pro v6.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
+<div class="card"><div class="small">Turnistica Pro v6.3.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
 <script>
 const KEY="turnistica_pro_v5";
 const DEF={employees:[
 {name:"A",role:"Responsabile",hours:"",notes:""},{name:"B",role:"Barista",hours:"",notes:""},{name:"C",role:"Sala",hours:"",notes:""},
 {name:"D",role:"Barista",hours:"",notes:""},{name:"E",role:"Sala",hours:"",notes:""},{name:"F",role:"Cuoco",hours:"",notes:""}],
-shifts:[{code:"M",desc:"Mattina",start:"09:00",end:"17:00",hours:8},{code:"P",desc:"Pomeriggio",start:"15:00",end:"23:00",hours:8},{code:"C",desc:"Centrale",start:"11:00",end:"19:00",hours:8},{code:"R",desc:"Riposo",start:"",end:"",hours:0}],
+shifts:[{code:"S1",desc:"09:00-17:00",start:"09:00",end:"17:00",hours:8},{code:"S2",desc:"10:00-15:00",start:"10:00",end:"15:00",hours:5},{code:"S3",desc:"15:00-23:00",start:"15:00",end:"23:00",hours:8},{code:"R",desc:"Riposo",start:"",end:"",hours:0}],
 needs:[{start:"09:00",end:"15:00",role:"Responsabile",min:1},{start:"09:00",end:"15:00",role:"Barista",min:1},{start:"15:00",end:"23:00",role:"Barista",min:2},{start:"09:00",end:"17:00",role:"Cuoco",min:1}],
 absences:[],settings:{open:"09:00",close:"23:00",closed:1,rest:11},schedule:[]};
 let data;try{data=JSON.parse(localStorage.getItem(KEY))||structuredClone(DEF)}catch(e){data=structuredClone(DEF)}
@@ -71,7 +71,7 @@ $("addEmployee").onclick=()=>{data.employees.push({name:"",role:"",hours:"",note
 function renderAbsences(){let b=$("absenceBody");b.innerHTML="";data.absences.forEach((a,i)=>{let tr=document.createElement("tr");tr.innerHTML=`<td><select>${data.employees.map((e,j)=>`<option value="${j}" ${+a.emp===j?"selected":""}>${esc(e.name||"—")}</option>`).join("")}</select></td><td><input type=date value="${a.from}"></td><td><input type=date value="${a.to}"></td><td><select><option ${a.type==="Ferie"?"selected":""}>Ferie</option><option ${a.type==="Permesso"?"selected":""}>Permesso</option><option ${a.type==="Indisponibile"?"selected":""}>Indisponibile</option><option ${a.type==="Malattia"?"selected":""}>Malattia</option></select></td><td><input value="${esc(a.note)}"></td><td><button class=danger>Elimina</button></td>`;let q=tr.querySelectorAll("select,input");q[0].onchange=()=>a.emp=+q[0].value;q[1].onchange=()=>a.from=q[1].value;q[2].onchange=()=>a.to=q[2].value;q[3].onchange=()=>a.type=q[3].value;q[4].oninput=()=>a.note=q[4].value;tr.querySelector("button").onclick=()=>{data.absences.splice(i,1);save();renderAbsences()};b.appendChild(tr)})}
 $("addAbsence").onclick=()=>{let today=new Date(),d=iso(today);data.absences.push({emp:0,from:d,to:d,type:"Ferie",note:""});save();renderAbsences()};$("saveAbsence").onclick=()=>{save();renderCalendar();toast("Assenze salvate")};
 
-function renderShifts(){let box=$("shiftList");box.innerHTML="";data.shifts.forEach((s,i)=>{let c=document.createElement("div");c.className="card";c.innerHTML=`<div class="grid g2"><div><label>Codice</label><input data-k=code value="${esc(s.code)}"></div><div><label>Descrizione</label><input data-k=desc value="${esc(s.desc)}"></div><div><label>Inizio</label><input data-k=start type=time value="${s.start}"></div><div><label>Fine</label><input data-k=end type=time value="${s.end}"></div><div><label>Ore</label><input data-k=hours type=number min=0 step=.5 value="${s.hours}"></div></div><div class=actions><button class=danger>Elimina</button></div>`;c.querySelectorAll("input").forEach(x=>x.oninput=()=>s[x.dataset.k]=x.dataset.k==="hours"?Number(x.value):x.value);c.querySelector("button").onclick=()=>{data.shifts.splice(i,1);save();renderShifts();renderCalendar()};box.appendChild(c)})}
+function renderShifts(){let box=$("shiftList");box.innerHTML="";data.shifts.forEach((s,i)=>{let c=document.createElement("div");c.className="card";c.innerHTML=`<div class="grid g2"><div><label>Codice interno</label><input data-k=code value="${esc(s.code)}"></div><div><label>Turno visualizzato</label><input data-k=desc value="${esc(s.desc)}" placeholder="es. 09:00-17:00"></div><div><label>Inizio</label><input data-k=start type=time value="${s.start}"></div><div><label>Fine</label><input data-k=end type=time value="${s.end}"></div><div><label>Ore</label><input data-k=hours type=number min=0 step=.5 value="${s.hours}"></div></div><div class=actions><button class=danger>Elimina</button></div>`;c.querySelectorAll("input").forEach(x=>x.oninput=()=>s[x.dataset.k]=x.dataset.k==="hours"?Number(x.value):x.value);c.querySelector("button").onclick=()=>{data.shifts.splice(i,1);save();renderShifts();renderCalendar()};box.appendChild(c)})}
 $("addShift").onclick=()=>{data.shifts.push({code:"",desc:"Nuovo",start:"",end:"",hours:0});save();renderShifts()};$("saveShifts").onclick=()=>{save();renderCalendar();toast("Turni salvati")};
 
 function renderNeeds(){let b=$("needBody");b.innerHTML="";data.needs.forEach((n,i)=>{let tr=document.createElement("tr");tr.innerHTML=`<td><input type=time value="${n.start}"></td><td><input type=time value="${n.end}"></td><td><input value="${esc(n.role)}"></td><td><input type=number min=0 value="${n.min}"></td><td><button class=danger>Elimina</button></td>`;let q=tr.querySelectorAll("input");q[0].oninput=()=>n.start=q[0].value;q[1].oninput=()=>n.end=q[1].value;q[2].oninput=()=>n.role=q[2].value;q[3].oninput=()=>n.min=+q[3].value;tr.querySelector("button").onclick=()=>{data.needs.splice(i,1);save();renderNeeds()};b.appendChild(tr)})}
@@ -132,7 +132,7 @@ function renderMonth(){
      let idx=(data.schedule[i]?.dates||[]).findIndex(x=>x.date===iso(d)),v=idx>=0?data.schedule[i].dates[idx].shift:"";
      let closed=d.getDay()===+data.settings.closed,abs=absent(i,d);
      if(closed)v="CHIUSO"; if(abs)v="ASSENZA"; if(v && sh(v))hrs+=sh(v).hours||0;
-     h+=`<td class="${abs?'dayoff':''}"><select onchange="window.setMonthTurn(${i},'${iso(d)}',this.value)" ${closed||abs?"disabled":""}><option value="">—</option><option value="CHIUSO" ${v==="CHIUSO"?"selected":""}>CHIUSO</option>${data.shifts.map(x=>`<option value="${esc(x.code)}" ${v===x.code?"selected":""}>${esc(x.code)}</option>`).join("")}</select></td>`;
+     h+=`<td class="${abs?'dayoff':''}"><select onchange="window.setMonthTurn(${i},'${iso(d)}',this.value)" ${closed||abs?"disabled":""}><option value="">—</option><option value="CHIUSO" ${v==="CHIUSO"?"selected":""}>CHIUSO</option>${data.shifts.filter(x=>x.code!=="R").map(x=>`<option value="${esc(x.code)}" ${v===x.code?"selected":""}>${esc(x.start)}-${esc(x.end)}</option>`).join("")}</select></td>`;
    });
    h+=`<td><b>${hrs} h</b></td></tr>`;
  });
@@ -143,43 +143,71 @@ window.setMonthTurn=(i,date,v)=>{
  let z=data.schedule[i].dates.find(x=>x.date===date);if(!z){z={date,shift:""};data.schedule[i].dates.push(z)}z.shift=v;save();renderMonth();
 };
 function generateMonth(){
- let ds=monthDates(),errors=[];
- data.schedule=data.employees.map(()=>({dates:[]}));
- ds.forEach(d=>{
-   let di=d.getDate()-1;
-   if(d.getDay()===+data.settings.closed){data.schedule.forEach((x)=>x.dates.push({date:iso(d),shift:"CHIUSO"}));return}
-   data.employees.forEach(x=>x.dates.push({date:iso(d),shift:"R"}));
-   for(const n of [...data.needs].sort((a,b)=>b.min-a.min)){
-     let candidates=data.employees.map((e,i)=>i).filter(i=>role(i)===n.role.trim().toLowerCase()&&!absent(i,d));
-     candidates.sort((a,b)=>workedMonth(a)/((+data.employees[a].hours)||999)-workedMonth(b)/((+data.employees[b].hours)||999));
-     let need=n.min;
-     for(let i of candidates){
-       if(!need)break;
-       let rec=data.schedule[i].dates[di]; if(rec.shift!=="R")continue;
-       let poss=data.shifts.filter(x=>x.code!=="R"&&x.start&&x.end&&overlaps(x,n)&&eligibleMonth(i,di,x,d));
-       poss.sort((a,b)=>countMonth(i,a.code)-countMonth(i,b.code));
-       if(poss.length){rec.shift=poss[0].code;need--}
-     }
-     if(need)errors.push(`${d.toLocaleDateString("it-IT",{day:"2-digit",month:"2-digit"})}: ${n.role} (${need} scoperto)`);
-   }
-   // Fill contract hours without exceeding target.
-   data.employees.forEach((e,i)=>{
-     let target=+e.hours||0;if(!target)return;
-     let guard=0;
-     while(workedMonth(i)<target*4.345&&guard++<80){
-       let best=null;
-       for(let j=0;j<ds.length;j++){
-         if(data.schedule[i].dates[j].shift!=="R"||absent(i,ds[j])||ds[j].getDay()===+data.settings.closed)continue;
-         for(let x of data.shifts.filter(x=>x.code!=="R"&&x.start&&x.end)){
-           if(workedMonth(i)+(x.hours||0)>target*4.345||!eligibleMonth(i,j,x,ds[j]))continue;
-           let score=countMonth(i,x.code)*3+j*.01;if(!best||score<best.score)best={j,x,score};
-         }
-       }
-       if(!best)break;data.schedule[i].dates[best.j].shift=best.x.code;
-     }
-   });
- });
- save();renderMonth();$("diagnostics").innerHTML=errors.length?`<div class=alert><b>Copertura incompleta.</b><br>${[...new Set(errors)].slice(0,30).map(esc).join("<br>")}</div>`:`<div class=ok><b>Mese generato.</b> I requisiti disponibili risultano coperti.</div>`;toast("Mese generato");
+  const ds=monthDates(), errors=[];
+  data.schedule=data.employees.map(()=>({dates:ds.map(d=>({date:iso(d),shift:"R"}))}));
+
+  // Giorno di chiusura
+  ds.forEach((d,di)=>{
+    if(d.getDay()===+data.settings.closed){
+      data.schedule.forEach(x=>x.dates[di].shift="CHIUSO");
+    }
+  });
+
+  // Copertura dei requisiti, una persona per volta.
+  for(let di=0;di<ds.length;di++){
+    if(ds[di].getDay()===+data.settings.closed) continue;
+    for(const n of [...data.needs].sort((x,y)=>(+y.min||0)-(+x.min||0))){
+      let need=+n.min||0;
+      let candidates=data.employees.map((e,i)=>i)
+        .filter(i=>role(i)===String(n.role||"").trim().toLowerCase() && !absent(i,ds[di]));
+
+      candidates.sort((x,y)=>workedMonth(x)-workedMonth(y));
+
+      for(const i of candidates){
+        if(need<=0) break;
+        if(data.schedule[i].dates[di].shift!=="R") continue;
+        const possible=data.shifts
+          .filter(x=>x.code && x.code!=="R" && x.start && x.end && overlaps(x,n))
+          .filter(x=>eligibleMonth(i,di,x,ds[di]));
+        possible.sort((x,y)=>countMonth(i,x.code)-countMonth(i,y.code));
+        if(possible.length){
+          data.schedule[i].dates[di].shift=possible[0].code;
+          need--;
+        }
+      }
+      if(need>0) errors.push(`${ds[di].toLocaleDateString("it-IT",{weekday:"short",day:"2-digit",month:"2-digit"})}: ${n.role} ${n.start}-${n.end} — ${need} scoperto`);
+    }
+  }
+
+  // Se sono state indicate ore contrattuali, prova a distribuirle nel mese.
+  data.employees.forEach((e,i)=>{
+    const weekly=Number(e.hours)||0;
+    if(!weekly) return;
+    const target=weekly*4.345;
+    let guard=0;
+    while(workedMonth(i)<target && guard++<200){
+      let best=null;
+      for(let di=0;di<ds.length;di++){
+        const rec=data.schedule[i].dates[di];
+        if(rec.shift!=="R" || absent(i,ds[di]) || ds[di].getDay()===+data.settings.closed) continue;
+        for(const x of data.shifts.filter(q=>q.code&&q.code!=="R"&&q.start&&q.end)){
+          if(workedMonth(i)+(+x.hours||0)>target) continue;
+          if(!eligibleMonth(i,di,x,ds[di])) continue;
+          const score=countMonth(i,x.code)*10+di/100;
+          if(!best||score<best.score) best={di,x,score};
+        }
+      }
+      if(!best) break;
+      data.schedule[i].dates[best.di].shift=best.x.code;
+    }
+  });
+
+  save();
+  renderMonth();
+  $("diagnostics").innerHTML=errors.length
+    ? `<div class="alert"><b>Mese generato, ma ci sono scoperture:</b><br>${[...new Set(errors)].slice(0,40).map(esc).join("<br>")}</div>`
+    : `<div class="ok"><b>Mese generato correttamente.</b> Controlla il calendario e modifica manualmente eventuali esigenze.</div>`;
+  toast("Mese generato");
 }
 function countMonth(i,c){return (data.schedule[i]?.dates||[]).filter(x=>x.shift===c).length}
 function workedMonth(i){return (data.schedule[i]?.dates||[]).reduce((a,x)=>a+(sh(x.shift)?.hours||0),0)}
@@ -188,7 +216,7 @@ function eligibleMonth(i,j,x,d){
  if(j>0){let p=data.schedule[i].dates[j-1]?.shift,ps=sh(p);if(ps&&x&&min(x.start)+1440-min(ps.end)<(+data.settings.rest||0)*60)return false;if(p===x.code)return false}
  return true;
 }
-$("generateMonth").onclick=generateMonth;
+$("generateMonth").onclick=()=>{try{generateMonth()}catch(err){console.error(err);$("diagnostics").innerHTML=`<div class="alert"><b>Errore nella generazione.</b><br>${esc(err.message||err)}</div>`;toast("Errore: controlla il messaggio")}};
 $("prevMonth").onclick=()=>{let [y,m]=$("month").value.split("-").map(Number);m--;if(m===0){m=12;y--}$("month").value=`${y}-${String(m).padStart(2,"0")}`;renderMonth()};
 $("nextMonth").onclick=()=>{let [y,m]=$("month").value.split("-").map(Number);m++;if(m===13){m=1;y++}$("month").value=`${y}-${String(m).padStart(2,"0")}`;renderMonth()};
 $("month").onchange=renderMonth;
