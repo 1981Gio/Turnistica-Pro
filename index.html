@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#111827">
+<title>Turnistica Pro v6</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:5}h1{margin:0;font-size:22px}header small{opacity:.75}
+nav{display:flex;gap:7px;overflow:auto;background:#fff;padding:9px;border-bottom:1px solid #ddd}nav button{border:0;border-radius:9px;padding:10px 13px;font-weight:700;white-space:nowrap;background:#e5e7eb}nav button.active{background:#111827;color:#fff}
+main{max-width:1200px;margin:auto;padding:10px}.view{display:none}.view.active{display:block}.card{background:#fff;border-radius:14px;padding:13px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+.grid{display:grid;gap:10px}.g2{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+label{font-size:13px;font-weight:700;display:block;margin:4px 0}input,select{width:100%;font-size:16px;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff}
+button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;padding:11px 14px;font-weight:700}.primary{background:#111827;color:#fff}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:950px}th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}th{background:#f8fafc}
+.small{font-size:12px;color:#64748b}.stat{font-size:25px;font-weight:800}.bad{color:#b91c1c}.warn{color:#b45309}.good{color:#047857}.alert{padding:10px;border-radius:10px;background:#fff7ed;color:#9a3412;margin-top:10px}.ok{padding:10px;border-radius:10px;background:#ecfdf5;color:#065f46;margin-top:10px}
+.toast{position:fixed;bottom:18px;left:12px;right:12px;background:#111827;color:#fff;padding:12px;border-radius:10px;text-align:center;display:none;z-index:20}
+.dayoff{background:#fef2f2}.holiday{background:#eff6ff}
+</style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"></head>
+<body>
+<header><h1>Turnistica Pro</h1><small>v6 • calendario mensile</small></header>
+<nav id="nav">
+<button class="active" data-v="turnistica">Turnistica</button><button data-v="dipendenti">Dipendenti</button><button data-v="assenze">Assenze</button><button data-v="turni">Turni</button><button data-v="fabbisogno">Fabbisogno</button><button data-v="impostazioni">Impostazioni</button>
+</nav>
+<main>
+<section id="turnistica" class="view active">
+<div class="card"><h2>Turnistica</h2><div class="grid g2"><div><label>Mese</label><input id="month" type="month"></div><div class="actions"><button class="primary" id="generateMonth">Genera mese</button><button class="secondary" id="export">Esporta per Numbers</button></div></div><div class="actions"><button class="secondary" id="prevMonth">‹ Mese precedente</button><button class="secondary" id="nextMonth">Mese successivo ›</button></div>
+<p class="small">Il generatore considera ruolo, ore contrattuali, assenze, riposo minimo e rotazione dei turni.</p></div>
+<div class="card" id="summary"></div><div class="card" id="diagnostics"></div><div class="card"><h3 id="monthTitle"></h3><div class="scroll"><table id="calendar"></table></div></div>
+</section>
+
+<section id="dipendenti" class="view"><div class="card"><h2>Dipendenti</h2><div id="employeeList"></div><div class="actions"><button class="primary" id="addEmployee">＋ Aggiungi dipendente</button><button class="secondary" id="saveEmployees">Salva</button></div></div></section>
+
+<section id="assenze" class="view"><div class="card"><h2>Ferie, permessi e indisponibilità</h2><p class="small">Aggiungi un'assenza indicando dipendente, data iniziale, data finale e tipo.</p>
+<div class="scroll"><table><thead><tr><th>Dipendente</th><th>Dal</th><th>Al</th><th>Tipo</th><th>Nota</th><th></th></tr></thead><tbody id="absenceBody"></tbody></table></div>
+<div class="actions"><button class="primary" id="addAbsence">＋ Aggiungi assenza</button><button class="secondary" id="saveAbsence">Salva</button></div></div></section>
+
+<section id="turni" class="view"><div class="card"><h2>Turni</h2><div id="shiftList"></div><div class="actions"><button class="primary" id="addShift">＋ Aggiungi turno</button><button class="secondary" id="saveShifts">Salva</button></div></div></section>
+
+<section id="fabbisogno" class="view"><div class="card"><h2>Fabbisogno</h2><div class="scroll"><table><thead><tr><th>Inizio</th><th>Fine</th><th>Ruolo</th><th>Minimo</th><th></th></tr></thead><tbody id="needBody"></tbody></table></div>
+<div class="actions"><button class="primary" id="addNeed">＋ Aggiungi requisito</button><button class="secondary" id="saveNeed">Salva</button></div></div></section>
+
+<section id="impostazioni" class="view"><div class="card"><h2>Impostazioni</h2><div class="grid g2">
+<div><label>Apertura</label><input id="open" type="time"></div><div><label>Chiusura</label><input id="close" type="time"></div>
+<div><label>Giorno chiusura</label><select id="closed"><option value="1">Lunedì</option><option value="2">Martedì</option><option value="3">Mercoledì</option><option value="4">Giovedì</option><option value="5">Venerdì</option><option value="6">Sabato</option><option value="0">Domenica</option></select></div>
+<div><label>Riposo minimo tra turni (ore)</label><input id="rest" type="number" min="0" max="24" step=".5"></div>
+</div><div class="actions"><button class="primary" id="saveSettings">Salva</button></div></div>
+<div class="card"><h3>Regole v5</h3><ul><li>Ferie/permessi bloccano automaticamente l'assegnazione.</li><li>Le note "no domenica" e "no sabato" vengono rispettate.</li><li>Il generatore cerca di non superare le ore contrattuali.</li><li>Il generatore cerca di distribuire mattine e pomeriggi.</li><li>Controlla il riposo minimo tra giorni consecutivi.</li></ul></div></section>
+</main><div id="toast" class="toast"></div>
+<script>
+const KEY="turnistica_pro_v5";
+const DEF={employees:[
+{name:"A",role:"Responsabile",hours:"",notes:""},{name:"B",role:"Barista",hours:"",notes:""},{name:"C",role:"Sala",hours:"",notes:""},
+{name:"D",role:"Barista",hours:"",notes:""},{name:"E",role:"Sala",hours:"",notes:""},{name:"F",role:"Cuoco",hours:"",notes:""}],
+shifts:[{code:"M",desc:"Mattina",start:"09:00",end:"17:00",hours:8},{code:"P",desc:"Pomeriggio",start:"15:00",end:"23:00",hours:8},{code:"C",desc:"Centrale",start:"11:00",end:"19:00",hours:8},{code:"R",desc:"Riposo",start:"",end:"",hours:0}],
+needs:[{start:"09:00",end:"15:00",role:"Responsabile",min:1},{start:"09:00",end:"15:00",role:"Barista",min:1},{start:"15:00",end:"23:00",role:"Barista",min:2},{start:"09:00",end:"17:00",role:"Cuoco",min:1}],
+absences:[],settings:{open:"09:00",close:"23:00",closed:1,rest:11},schedule:[]};
+let data;try{data=JSON.parse(localStorage.getItem(KEY))||structuredClone(DEF)}catch(e){data=structuredClone(DEF)}
+const $=id=>document.getElementById(id);const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+function esc(x){return String(x??"").replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+function toast(t){$("toast").textContent=t;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",1800)}
+function show(id){document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===id));if(id==="dipendenti")renderEmployees();if(id==="assenze")renderAbsences();if(id==="turni")renderShifts();if(id==="fabbisogno")renderNeeds();if(id==="impostazioni")loadSettings();if(id==="turnistica")renderCalendar()}
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+function renderEmployees(){let box=$("employeeList");box.innerHTML="";data.employees.forEach((e,i)=>{let c=document.createElement("div");c.className="card";c.innerHTML=`<div class="grid g2"><div><label>Nome</label><input data-k=name value="${esc(e.name)}"></div><div><label>Ruolo</label><input data-k=role value="${esc(e.role)}"></div><div><label>Ore contratto/settimana</label><input data-k=hours type=number min=0 step=.5 value="${esc(e.hours)}" placeholder="40"></div><div><label>Note/vincoli</label><input data-k=notes value="${esc(e.notes)}" placeholder="es. no domenica"></div></div><div class=actions><button class=danger>Elimina</button></div>`;c.querySelectorAll("input").forEach(x=>x.oninput=()=>e[x.dataset.k]=x.value);c.querySelector("button").onclick=()=>{data.employees.splice(i,1);save();renderEmployees();renderCalendar()};box.appendChild(c)})}
+$("addEmployee").onclick=()=>{data.employees.push({name:"",role:"",hours:"",notes:""});save();renderEmployees()};$("saveEmployees").onclick=()=>{save();renderCalendar();toast("Dipendenti salvati")};
+
+function renderAbsences(){let b=$("absenceBody");b.innerHTML="";data.absences.forEach((a,i)=>{let tr=document.createElement("tr");tr.innerHTML=`<td><select>${data.employees.map((e,j)=>`<option value="${j}" ${+a.emp===j?"selected":""}>${esc(e.name||"—")}</option>`).join("")}</select></td><td><input type=date value="${a.from}"></td><td><input type=date value="${a.to}"></td><td><select><option ${a.type==="Ferie"?"selected":""}>Ferie</option><option ${a.type==="Permesso"?"selected":""}>Permesso</option><option ${a.type==="Indisponibile"?"selected":""}>Indisponibile</option><option ${a.type==="Malattia"?"selected":""}>Malattia</option></select></td><td><input value="${esc(a.note)}"></td><td><button class=danger>Elimina</button></td>`;let q=tr.querySelectorAll("select,input");q[0].onchange=()=>a.emp=+q[0].value;q[1].onchange=()=>a.from=q[1].value;q[2].onchange=()=>a.to=q[2].value;q[3].onchange=()=>a.type=q[3].value;q[4].oninput=()=>a.note=q[4].value;tr.querySelector("button").onclick=()=>{data.absences.splice(i,1);save();renderAbsences()};b.appendChild(tr)})}
+$("addAbsence").onclick=()=>{let today=new Date(),d=iso(today);data.absences.push({emp:0,from:d,to:d,type:"Ferie",note:""});save();renderAbsences()};$("saveAbsence").onclick=()=>{save();renderCalendar();toast("Assenze salvate")};
+
+function renderShifts(){let box=$("shiftList");box.innerHTML="";data.shifts.forEach((s,i)=>{let c=document.createElement("div");c.className="card";c.innerHTML=`<div class="grid g2"><div><label>Codice</label><input data-k=code value="${esc(s.code)}"></div><div><label>Descrizione</label><input data-k=desc value="${esc(s.desc)}"></div><div><label>Inizio</label><input data-k=start type=time value="${s.start}"></div><div><label>Fine</label><input data-k=end type=time value="${s.end}"></div><div><label>Ore</label><input data-k=hours type=number min=0 step=.5 value="${s.hours}"></div></div><div class=actions><button class=danger>Elimina</button></div>`;c.querySelectorAll("input").forEach(x=>x.oninput=()=>s[x.dataset.k]=x.dataset.k==="hours"?Number(x.value):x.value);c.querySelector("button").onclick=()=>{data.shifts.splice(i,1);save();renderShifts();renderCalendar()};box.appendChild(c)})}
+$("addShift").onclick=()=>{data.shifts.push({code:"",desc:"Nuovo",start:"",end:"",hours:0});save();renderShifts()};$("saveShifts").onclick=()=>{save();renderCalendar();toast("Turni salvati")};
+
+function renderNeeds(){let b=$("needBody");b.innerHTML="";data.needs.forEach((n,i)=>{let tr=document.createElement("tr");tr.innerHTML=`<td><input type=time value="${n.start}"></td><td><input type=time value="${n.end}"></td><td><input value="${esc(n.role)}"></td><td><input type=number min=0 value="${n.min}"></td><td><button class=danger>Elimina</button></td>`;let q=tr.querySelectorAll("input");q[0].oninput=()=>n.start=q[0].value;q[1].oninput=()=>n.end=q[1].value;q[2].oninput=()=>n.role=q[2].value;q[3].oninput=()=>n.min=+q[3].value;tr.querySelector("button").onclick=()=>{data.needs.splice(i,1);save();renderNeeds()};b.appendChild(tr)})}
+$("addNeed").onclick=()=>{data.needs.push({start:"09:00",end:"15:00",role:"",min:1});save();renderNeeds()};$("saveNeed").onclick=()=>{save();toast("Fabbisogno salvato")};
+function loadSettings(){$("open").value=data.settings.open;$("close").value=data.settings.close;$("closed").value=data.settings.closed;$("rest").value=data.settings.rest}
+$("saveSettings").onclick=()=>{data.settings={open:$("open").value,close:$("close").value,closed:+$("closed").value,rest:+$("rest").value||0};save();renderCalendar();toast("Impostazioni salvate")};
+
+function monday(d){let x=new Date(d),day=x.getDay();x.setDate(x.getDate()+(day===0?-6:1-day));return x}function iso(d){return d.toISOString().slice(0,10)}
+function days(){let d=monday(new Date($("week").value+"T12:00:00"));$("week").value=iso(d);return [...Array(7)].map((_,i)=>{let x=new Date(d);x.setDate(x.getDate()+i);return x})}
+function min(t){let [h,m]=(t||"00:00").split(":").map(Number);return h*60+m}function endMin(s){let a=min(s.start),b=min(s.end);return b<=a?b+1440:b}
+function overlaps(s,n){return min(s.start)<endMin(n)&&min(n.start)<endMin(s)}
+function sh(c){return data.shifts.find(s=>s.code===c)}
+function worked(i){return(data.schedule[i]?.days||[]).reduce((a,c)=>a+(sh(c)?.hours||0),0)}
+function absent(i,d){let day=iso(d);return data.absences.some(a=>+a.emp===i&&a.from<=day&&day<=a.to)}
+function role(i){return(data.employees[i].role||"").trim().toLowerCase()}
+function eligible(i,di,s){let e=data.employees[i],ds=days(),d=ds[di];if(absent(i,d))return false;let note=(e.notes||"").toLowerCase();if(note.includes("no domenica")&&d.getDay()===0)return false;if(note.includes("no sabato")&&d.getDay()===6)return false;if(di>0){let prev=data.schedule[i]?.days?.[di-1],ps=sh(prev);if(ps&&s&&min(s.start)+1440-min(ps.end)<(+data.settings.rest||0)*60)return false;if(prev===s.code)return false}return true}
+function renderCalendar(){let ds=days(),h="<thead><tr><th>Dipendente</th>"+ds.map(d=>`<th>${d.toLocaleDateString("it-IT",{weekday:"short",day:"2-digit",month:"2-digit"})}</th>`).join("")+"<th>Ore</th><th>Contratto</th></tr></thead><tbody>";data.employees.forEach((e,i)=>{let r=data.schedule[i]?.days||Array(7).fill(""),hrs=worked(i);h+=`<tr><td><b>${esc(e.name||"—")}</b><br><span class=small>${esc(e.role||"")}</span></td>`;r.forEach((v,di)=>{let closed=ds[di].getDay()===+data.settings.closed,abs=absent(i,ds[di]);if(closed)v="CHIUSO";if(abs)v= v==="CHIUSO"?"CHIUSO":"ASSENZA";h+=`<td class="${abs?'dayoff':''}"><select onchange="window.setTurn(${i},${di},this.value)" ${closed||abs?"disabled":""}><option value="">—</option><option value="CHIUSO" ${v==="CHIUSO"?"selected":""}>CHIUSO</option>${data.shifts.map(s=>`<option value="${esc(s.code)}" ${v===s.code?"selected":""}>${esc(s.code)} · ${esc(s.desc)}</option>`).join("")}</select></td>`});h+=`<td><b>${hrs} h</b></td><td>${e.hours||"—"} h</td></tr>`});$("calendar").innerHTML=h+"</tbody>";$("summary").innerHTML=`<div class=grid g3><div><span class=small>Dipendenti</span><div class=stat>${data.employees.length}</div></div><div><span class=small>Ore programmate</span><div class=stat>${data.employees.reduce((a,e,i)=>a+worked(i),0)} h</div></div><div><span class=small>Assenze registrate</span><div class=stat>${data.absences.length}</div></div></div>`}
+window.setTurn=(i,d,v)=>{if(!data.schedule[i])data.schedule[i]={days:Array(7).fill("R")};data.schedule[i].days[d]=v;save();renderCalendar()};
+
+function generate(){
+ let ds=days(),work=data.shifts.filter(s=>s.code&&s.code!=="R"&&s.start&&s.end),errors=[];
+ data.schedule=data.employees.map(()=>({days:Array(7).fill("R")}));
+ for(let di=0;di<7;di++){
+  if(ds[di].getDay()===+data.settings.closed){data.schedule.forEach(x=>x.days[di]="CHIUSO");continue}
+  for(const n of [...data.needs].sort((a,b)=>b.min-a.min)){
+   let cand=data.employees.map((e,i)=>i).filter(i=>role(i)===n.role.trim().toLowerCase()&&!absent(i,ds[di]));
+   let need=n.min;
+   cand.sort((a,b)=>{let ta=+data.employees[a].hours||999,tb=+data.employees[b].hours||999;return worked(a)/ta-worked(b)/tb});
+   for(let i of cand){
+    if(need<=0)break;if(data.schedule[i].days[di]!=="R")continue;
+    let poss=work.filter(s=>overlaps(s,n)&&eligible(i,di,s));
+    poss.sort((a,b)=>data.schedule[i].days.filter(x=>x===a.code).length-data.schedule[i].days.filter(x=>x===b.code).length);
+    if(poss.length){data.schedule[i].days[di]=poss[0].code;need--}
+   }
+   if(need>0)errors.push(`${ds[di].toLocaleDateString("it-IT",{weekday:"short",day:"2-digit"})}: ${n.role} ${n.start}-${n.end} (${need} scoperto)`);
+  }
+ }
+ // Fill contracts with legal/availability-aware work
+ data.employees.forEach((e,i)=>{let target=+e.hours||0;if(!target)return;let guard=0;while(worked(i)<target&&guard++<30){let best=null;for(let di=0;di<7;di++){if(ds[di].getDay()===+data.settings.closed||data.schedule[i].days[di]!=="R")continue;for(let s of work){if(worked(i)+(s.hours||0)>target||!eligible(i,di,s))continue;let count=data.schedule[i].days.filter(x=>x===s.code).length;let score=count*3+di*.05;if(!best||score<best.score)best={di,s,score}}}if(!best)break;data.schedule[i].days[best.di]=best.s.code}});
+ save();renderCalendar();$("diagnostics").innerHTML=errors.length?`<div class=alert><b>Attenzione: copertura incompleta.</b><br>${[...new Set(errors)].slice(0,20).map(esc).join("<br>")}</div>`:`<div class=ok><b>Generazione completata.</b> I requisiti sono coperti con le disponibilità impostate.</div>`;toast("Turnistica generata")}
+$("generate").onclick=generate;$("week").onchange=renderCalendar;
+$("export").onclick=()=>{
+ let ds=monthDates(),lines=[["Dipendente","Ruolo","Ore contratto",...ds.map(d=>d.toLocaleDateString("it-IT",{weekday:"short",day:"2-digit",month:"2-digit"})),"Ore mese","Target mensile"].join(";")];
+ data.employees.forEach((e,i)=>{let vals=ds.map(d=>{let z=data.schedule[i]?.dates?.find(x=>x.date===iso(d));return z?.shift||""}),h=vals.reduce((a,c)=>a+(sh(c)?.hours||0),0);lines.push([e.name,e.role,e.hours,...vals,h,e.hours?((+e.hours||0)*4.345).toFixed(1):""].join(";"))});
+ let b=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="Turnistica_v6_Numbers.csv";a.click();
+}
+function monthDates(){
+ let v=$("month").value; if(!v){let d=new Date();$("month").value=d.toISOString().slice(0,7);v=$("month").value}
+ let [y,m]=v.split("-").map(Number), daysIn=new Date(y,m,0).getDate();
+ return [...Array(daysIn)].map((_,i)=>new Date(y,m-1,i+1));
+}
+function renderMonth(){
+ let ds=monthDates();$("monthTitle").textContent=ds[0].toLocaleDateString("it-IT",{month:"long",year:"numeric"});
+ let h="<thead><tr><th>Dipendente</th>"+ds.map(d=>`<th>${d.toLocaleDateString("it-IT",{weekday:"short",day:"2-digit"})}</th>`).join("")+"<th>Ore</th></tr></thead><tbody>";
+ data.employees.forEach((e,i)=>{
+   let hrs=0;h+=`<tr><td><b>${esc(e.name||"—")}</b><br><span class=small>${esc(e.role||"")}</span></td>`;
+   ds.forEach(d=>{
+     let idx=(data.schedule[i]?.dates||[]).findIndex(x=>x.date===iso(d)),v=idx>=0?data.schedule[i].dates[idx].shift:"";
+     let closed=d.getDay()===+data.settings.closed,abs=absent(i,d);
+     if(closed)v="CHIUSO"; if(abs)v="ASSENZA"; if(v && sh(v))hrs+=sh(v).hours||0;
+     h+=`<td class="${abs?'dayoff':''}"><select onchange="window.setMonthTurn(${i},'${iso(d)}',this.value)" ${closed||abs?"disabled":""}><option value="">—</option><option value="CHIUSO" ${v==="CHIUSO"?"selected":""}>CHIUSO</option>${data.shifts.map(x=>`<option value="${esc(x.code)}" ${v===x.code?"selected":""}>${esc(x.code)}</option>`).join("")}</select></td>`;
+   });
+   h+=`<td><b>${hrs} h</b></td></tr>`;
+ });
+ $("calendar").innerHTML=h+"</tbody>";
+}
+window.setMonthTurn=(i,date,v)=>{
+ if(!data.schedule[i])data.schedule[i]={dates:[]};
+ let z=data.schedule[i].dates.find(x=>x.date===date);if(!z){z={date,shift:""};data.schedule[i].dates.push(z)}z.shift=v;save();renderMonth();
+};
+function generateMonth(){
+ let ds=monthDates(),errors=[];
+ data.schedule=data.employees.map(()=>({dates:[]}));
+ ds.forEach(d=>{
+   let di=d.getDate()-1;
+   if(d.getDay()===+data.settings.closed){data.schedule.forEach((x)=>x.dates.push({date:iso(d),shift:"CHIUSO"}));return}
+   data.employees.forEach(x=>x.dates.push({date:iso(d),shift:"R"}));
+   for(const n of [...data.needs].sort((a,b)=>b.min-a.min)){
+     let candidates=data.employees.map((e,i)=>i).filter(i=>role(i)===n.role.trim().toLowerCase()&&!absent(i,d));
+     candidates.sort((a,b)=>workedMonth(a)/((+data.employees[a].hours)||999)-workedMonth(b)/((+data.employees[b].hours)||999));
+     let need=n.min;
+     for(let i of candidates){
+       if(!need)break;
+       let rec=data.schedule[i].dates[di]; if(rec.shift!=="R")continue;
+       let poss=data.shifts.filter(x=>x.code!=="R"&&x.start&&x.end&&overlaps(x,n)&&eligibleMonth(i,di,x,d));
+       poss.sort((a,b)=>countMonth(i,a.code)-countMonth(i,b.code));
+       if(poss.length){rec.shift=poss[0].code;need--}
+     }
+     if(need)errors.push(`${d.toLocaleDateString("it-IT",{day:"2-digit",month:"2-digit"})}: ${n.role} (${need} scoperto)`);
+   }
+   // Fill contract hours without exceeding target.
+   data.employees.forEach((e,i)=>{
+     let target=+e.hours||0;if(!target)return;
+     let guard=0;
+     while(workedMonth(i)<target*4.345&&guard++<80){
+       let best=null;
+       for(let j=0;j<ds.length;j++){
+         if(data.schedule[i].dates[j].shift!=="R"||absent(i,ds[j])||ds[j].getDay()===+data.settings.closed)continue;
+         for(let x of data.shifts.filter(x=>x.code!=="R"&&x.start&&x.end)){
+           if(workedMonth(i)+(x.hours||0)>target*4.345||!eligibleMonth(i,j,x,ds[j]))continue;
+           let score=countMonth(i,x.code)*3+j*.01;if(!best||score<best.score)best={j,x,score};
+         }
+       }
+       if(!best)break;data.schedule[i].dates[best.j].shift=best.x.code;
+     }
+   });
+ });
+ save();renderMonth();$("diagnostics").innerHTML=errors.length?`<div class=alert><b>Copertura incompleta.</b><br>${[...new Set(errors)].slice(0,30).map(esc).join("<br>")}</div>`:`<div class=ok><b>Mese generato.</b> I requisiti disponibili risultano coperti.</div>`;toast("Mese generato");
+}
+function countMonth(i,c){return (data.schedule[i]?.dates||[]).filter(x=>x.shift===c).length}
+function workedMonth(i){return (data.schedule[i]?.dates||[]).reduce((a,x)=>a+(sh(x.shift)?.hours||0),0)}
+function eligibleMonth(i,j,x,d){
+ let note=(data.employees[i].notes||"").toLowerCase();if(note.includes("no domenica")&&d.getDay()===0)return false;if(note.includes("no sabato")&&d.getDay()===6)return false;
+ if(j>0){let p=data.schedule[i].dates[j-1]?.shift,ps=sh(p);if(ps&&x&&min(x.start)+1440-min(ps.end)<(+data.settings.rest||0)*60)return false;if(p===x.code)return false}
+ return true;
+}
+$("generateMonth").onclick=generateMonth;
+$("prevMonth").onclick=()=>{let [y,m]=$("month").value.split("-").map(Number);m--;if(m===0){m=12;y--}$("month").value=`${y}-${String(m).padStart(2,"0")}`;renderMonth()};
+$("nextMonth").onclick=()=>{let [y,m]=$("month").value.split("-").map(Number);m++;if(m===13){m=1;y++}$("month").value=`${y}-${String(m).padStart(2,"0")}`;renderMonth()};
+$("month").onchange=renderMonth;
+
+$("month").value=new Date().toISOString().slice(0,7);loadSettings();renderMonth();
+</script></body></html>
