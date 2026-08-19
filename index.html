@@ -6,30 +6,144 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111827">
-<title>Turnistica Pro v6.5</title>
+<title>Turnistica Pro v6.6</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-header{background:#111827;color:#fff;padding:16px;position:sticky;top:0;z-index:5}h1{margin:0;font-size:22px}header small{opacity:.75}
-nav{display:flex;gap:7px;overflow:auto;background:#fff;padding:9px;border-bottom:1px solid #ddd}nav button{border:0;border-radius:9px;padding:10px 13px;font-weight:700;white-space:nowrap;background:#e5e7eb}nav button.active{background:#111827;color:#fff}
-main{max-width:1200px;margin:auto;padding:10px}.view{display:none}.view.active{display:block}.card{background:#fff;border-radius:14px;padding:13px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
-.grid{display:grid;gap:10px}.g2{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
-label{font-size:13px;font-weight:700;display:block;margin:4px 0}input,select{width:100%;font-size:16px;padding:10px;border:1px solid #cbd5e1;border-radius:9px;background:#fff}
-button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;padding:11px 14px;font-weight:700}.primary{background:#111827;color:#fff}.secondary{background:#e5e7eb}.danger{background:#fee2e2;color:#991b1b}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:950px}th,td{padding:8px;border-bottom:1px solid #e5e7eb;text-align:left}th{background:#f8fafc}
-.small{font-size:12px;color:#64748b}.stat{font-size:25px;font-weight:800}.bad{color:#b91c1c}.warn{color:#b45309}.good{color:#047857}.alert{padding:10px;border-radius:10px;background:#fff7ed;color:#9a3412;margin-top:10px}.ok{padding:10px;border-radius:10px;background:#ecfdf5;color:#065f46;margin-top:10px}
-.toast{position:fixed;bottom:18px;left:12px;right:12px;background:#111827;color:#fff;padding:12px;border-radius:10px;text-align:center;display:none;z-index:20}
+*{box-sizing:border-box}
+:root{--ink:#111827;--muted:#64748b;--line:#dbe3ec;--soft:#f5f7fa;--blue:#087cf5;--danger:#9a3412}
+html{background:#f3f4f6}
+body{margin:0;background:#f3f4f6;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.4}
+header{background:var(--ink);color:#fff;padding:18px 18px 16px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:24px;letter-spacing:-.3px}
+header small{display:block;margin-top:3px;opacity:.75;font-size:14px}
+nav{display:flex;gap:10px;overflow:auto;background:#fff;padding:11px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch}
+nav button{border:0;border-radius:12px;padding:12px 17px;font-weight:750;white-space:nowrap;background:#e7ebf0;color:#087cf5;font-size:15px}
+nav button.active{background:var(--ink);color:#fff}
+main{max-width:1250px;margin:auto;padding:16px}
+.view{display:none}.view.active{display:block}
+.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 2px 10px #0000000d;border:1px solid #edf0f4}
+.card h2{margin:0 0 22px;font-size:27px;letter-spacing:-.4px}
+.card h3{margin:0 0 16px;font-size:21px}
+.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+label{font-size:14px;font-weight:750;display:block;margin:0 0 7px;color:#334155}
+input,select{width:100%;font-size:16px;padding:12px 13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;min-height:46px}
+button{cursor:pointer}
+.primary,.secondary,.danger{border:0;border-radius:11px;padding:12px 16px;font-weight:750;font-size:15px}
+.primary{background:var(--ink);color:#fff}.secondary{background:#e7ebf0;color:#087cf5}.danger{background:#fee2e2;color:#991b1b}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.small{font-size:13px;color:var(--muted)}
+.stat{font-size:25px;font-weight:800}.bad{color:#b91c1c}.warn{color:#b45309}.good{color:#047857}
+.alert{padding:15px 16px;border-radius:13px;background:#fff7ed;color:var(--danger);margin-top:0}
+.ok{padding:15px 16px;border-radius:13px;background:#ecfdf5;color:#065f46;margin-top:0}
+.toast{position:fixed;bottom:18px;left:12px;right:12px;background:var(--ink);color:#fff;padding:12px;border-radius:10px;text-align:center;display:none;z-index:20}
 .dayoff{background:#fef2f2}.holiday{background:#eff6ff}
+
+/* Turnistica: each functional area is clearly separated */
+#turnistica .turn-controls{padding:22px}
+#turnistica .turn-controls .month-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:end}
+#turnistica .turn-controls .export-row{margin-top:14px}
+#turnistica .turn-controls .export-row button{width:100%}
+#turnistica .turn-controls .month-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+#turnistica .turn-controls .month-nav button{flex:1 1 180px}
+#turnistica .turn-info{margin:0;color:var(--muted);font-size:14px}
+#summary:empty,#diagnostics:empty{display:none}
+#summary{min-height:58px}
+#diagnostics{min-height:58px}
+#monthTitle{font-size:23px;margin-bottom:16px}
+#calendar{min-width:1000px}
+
+/* Fabbisogno: spacious requirement cards */
+#fabbisogno .need-card{padding:20px}
+#fabbisogno .need-intro{color:var(--muted);margin:-8px 0 18px}
+#fabbisogno .scroll{overflow:visible}
+#fabbisogno table{min-width:0}
+#fabbisogno th,#fabbisogno td{padding:10px 8px}
+#fabbisogno td{vertical-align:middle}
+#fabbisogno .actions{margin-top:18px}
+
+/* Other tables */
+.scroll{overflow:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:950px}
+th,td{padding:10px 8px;border-bottom:1px solid #e5e7eb;text-align:left}
+th{background:#f8fafc;font-weight:750}
+
+@media(min-width:900px){
+  #turnistica .turn-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+  #turnistica .turn-layout>.card{margin-bottom:0}
+  #turnistica .calendar-card{grid-column:1/-1;margin-top:18px}
+  #fabbisogno .need-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+}
+
+@media(max-width:899px){
+  main{padding:12px}
+  .card{padding:16px;margin-bottom:14px;border-radius:16px}
+  .card h2{font-size:25px;margin-bottom:18px}
+  #turnistica .turn-controls .month-row{grid-template-columns:1fr}
+  #turnistica .turn-controls .month-row .primary{width:100%}
+  #turnistica .turn-layout>.card{margin-bottom:14px}
+  #fabbisogno .scroll{overflow:visible}
+  #fabbisogno table,#fabbisogno tbody{display:block;width:100%}
+  #fabbisogno thead{display:none}
+  #fabbisogno tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:13px;
+    margin-bottom:12px;
+  }
+  #fabbisogno td{display:block;border:0;padding:0}
+  #fabbisogno td:nth-child(3),#fabbisogno td:nth-child(4){grid-column:1/-1}
+  #fabbisogno td:nth-child(5){grid-column:1/-1;text-align:right;margin-top:2px}
+  #fabbisogno td:before{display:block;font-size:12px;font-weight:750;color:var(--muted);margin:0 0 4px}
+  #fabbisogno td:nth-child(1):before{content:"Inizio"}
+  #fabbisogno td:nth-child(2):before{content:"Fine"}
+  #fabbisogno td:nth-child(3):before{content:"Ruolo"}
+  #fabbisogno td:nth-child(4):before{content:"Minimo"}
+  #fabbisogno td:nth-child(5):before{content:""}
+  #fabbisogno input{min-height:44px}
+}
+
+@media(max-width:520px){
+  header{padding:15px 16px}
+  header h1{font-size:22px}
+  nav{padding:9px}
+  nav button{padding:11px 14px;font-size:14px}
+  .actions>*{flex:1 1 100%}
+  #turnistica .turn-controls .month-nav button{flex:1 1 100%}
+}
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"></head>
 <body>
-<header><h1>Turnistica Pro</h1><small>v6.5 • fabbisogno operativo</small></header>
+<header><h1>Turnistica Pro</h1><small>v6.6 • fabbisogno operativo</small></header>
 <nav id="nav">
 <button class="active" data-v="turnistica">Turnistica</button><button data-v="dipendenti">Dipendenti</button><button data-v="assenze">Assenze</button><button data-v="turni">Turni</button><button data-v="fabbisogno">Fabbisogno</button><button data-v="impostazioni">Impostazioni</button>
 </nav>
 <main>
 <section id="turnistica" class="view active">
-<div class="card"><h2>Turnistica</h2><div class="grid g2"><div><label>Mese</label><input id="month" type="month"></div><div class="actions"><button class="primary" id="generateMonth" type="button">Genera mese</button><button class="secondary" id="export">Esporta per Numbers</button></div></div><div class="actions"><button class="secondary" id="prevMonth">‹ Mese precedente</button><button class="secondary" id="nextMonth">Mese successivo ›</button></div>
-<p class="small">Il generatore considera ruolo, ore contrattuali, assenze, riposo minimo e rotazione dei turni.</p></div>
-<div class="card" id="summary"></div><div class="card" id="diagnostics"></div><div class="card"><h3 id="monthTitle"></h3><div class="scroll"><table id="calendar"></table></div></div>
+<div class="card turn-controls">
+  <h2>Turnistica</h2>
+  <div class="month-row">
+    <div><label>Mese</label><input id="month" type="month"></div>
+    <button class="primary" id="generateMonth" type="button">Genera mese</button>
+  </div>
+  <div class="export-row"><button class="secondary" id="export">Esporta per Numbers</button></div>
+  <div class="month-nav">
+    <button class="secondary" id="prevMonth">‹ Mese precedente</button>
+    <button class="secondary" id="nextMonth">Mese successivo ›</button>
+  </div>
+  <p class="turn-info">Il generatore considera ruolo, ore contrattuali, assenze, riposo minimo e rotazione dei turni.</p>
+</div>
+
+<div class="turn-layout">
+  <div class="card" id="summary"></div>
+  <div class="card" id="diagnostics"></div>
+</div>
+
+<div class="card calendar-card">
+  <h3 id="monthTitle"></h3>
+  <div class="scroll"><table id="calendar"></table></div>
+</div>
 </section>
 
 <section id="dipendenti" class="view"><div class="card"><h2>Dipendenti</h2><div id="employeeList"></div><div class="actions"><button class="primary" id="addEmployee">＋ Aggiungi dipendente</button><button class="secondary" id="saveEmployees">Salva</button></div></div></section>
@@ -40,8 +154,22 @@ button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;pad
 
 <section id="turni" class="view"><div class="card"><h2>Turni</h2><div id="shiftList"></div><div class="actions"><button class="primary" id="addShift">＋ Aggiungi turno</button><button class="secondary" id="saveShifts">Salva</button></div></div></section>
 
-<section id="fabbisogno" class="view"><div class="card"><h2>Fabbisogno</h2><div class="scroll"><table><thead><tr><th>Inizio</th><th>Fine</th><th>Ruolo</th><th>Minimo</th><th></th></tr></thead><tbody id="needBody"></tbody></table></div>
-<div class="actions"><button class="primary" id="addNeed">＋ Aggiungi requisito</button><button class="secondary" id="saveNeed">Salva</button></div></div></section>
+<section id="fabbisogno" class="view">
+<div class="card need-card">
+  <h2>Fabbisogno</h2>
+  <p class="need-intro">Imposta le fasce di copertura necessarie per ogni ruolo. Ogni requisito è separato e leggibile anche da iPhone.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Inizio</th><th>Fine</th><th>Ruolo</th><th>Minimo</th><th></th></tr></thead>
+      <tbody id="needBody"></tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <button class="primary" id="addNeed">＋ Aggiungi requisito</button>
+    <button class="secondary" id="saveNeed">Salva</button>
+  </div>
+</div>
+</section>
 
 <section id="impostazioni" class="view"><div class="card"><h2>Impostazioni</h2><div class="grid g2">
 <div><label>Apertura</label><input id="open" type="time"></div><div><label>Chiusura</label><input id="close" type="time"></div>
@@ -49,7 +177,7 @@ button{cursor:pointer}.primary,.secondary,.danger{border:0;border-radius:9px;pad
 <div><label>Riposo minimo tra turni (ore)</label><input id="rest" type="number" min="0" max="24" step=".5"></div>
 </div><div class="actions"><button class="primary" id="saveSettings">Salva</button></div></div>
 <div class="card"><h3>Regole v5</h3><ul><li>Ferie/permessi bloccano automaticamente l'assegnazione.</li><li>Le note "no domenica" e "no sabato" vengono rispettate.</li><li>Il generatore cerca di non superare le ore contrattuali.</li><li>Il generatore cerca di distribuire mattine e pomeriggi.</li><li>Controlla il riposo minimo tra giorni consecutivi.</li></ul></div></section>
-<div class="card"><div class="small">Turnistica Pro v6.5.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
+<div class="card"><div class="small">Turnistica Pro v6.6.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
 <script>
 const KEY="turnistica_pro_v5";
 const DEF={employees:[
