@@ -6,116 +6,148 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111827">
-<title>Turnistica Pro v6.6</title>
+<title>Turnistica Pro v6.7</title>
 <style>
 *{box-sizing:border-box}
-:root{--ink:#111827;--muted:#64748b;--line:#dbe3ec;--soft:#f5f7fa;--blue:#087cf5;--danger:#9a3412}
-html{background:#f3f4f6}
-body{margin:0;background:#f3f4f6;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.4}
-header{background:var(--ink);color:#fff;padding:18px 18px 16px;position:sticky;top:0;z-index:5}
-header h1{margin:0;font-size:24px;letter-spacing:-.3px}
-header small{display:block;margin-top:3px;opacity:.75;font-size:14px}
-nav{display:flex;gap:10px;overflow:auto;background:#fff;padding:11px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch}
-nav button{border:0;border-radius:12px;padding:12px 17px;font-weight:750;white-space:nowrap;background:#e7ebf0;color:#087cf5;font-size:15px}
-nav button.active{background:var(--ink);color:#fff}
-main{max-width:1250px;margin:auto;padding:16px}
+:root{
+ --ink:#111827;--muted:#64748b;--line:#dbe3ec;--bg:#f4f6f8;
+ --blue:#087cf5;--blueSoft:#eef6ff;--danger:#b45309;--dangerBg:#fff7ed;
+ --success:#047857;--successBg:#ecfdf5;--card:#fff;
+}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.42}
+header{background:var(--ink);color:#fff;padding:18px 18px 16px}
+header h1{margin:0;font-size:24px;line-height:1.1;letter-spacing:-.4px}
+header small{display:block;margin-top:5px;opacity:.72;font-size:14px}
+nav{display:flex;gap:10px;overflow-x:auto;background:#fff;padding:11px 12px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch}
+nav button{height:46px;border:1px solid #e1e6ed;border-radius:13px;padding:0 18px;font-weight:750;white-space:nowrap;background:#f1f3f6;color:var(--blue);font-size:15px}
+nav button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{max-width:1180px;margin:auto;padding:18px}
 .view{display:none}.view.active{display:block}
-.card{background:#fff;border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 2px 10px #0000000d;border:1px solid #edf0f4}
-.card h2{margin:0 0 22px;font-size:27px;letter-spacing:-.4px}
+.card{
+ background:var(--card);border:1px solid #e9edf2;border-radius:18px;
+ padding:20px;margin-bottom:18px;box-shadow:0 2px 9px rgba(15,23,42,.06)
+}
+.card h2{margin:0 0 20px;font-size:28px;line-height:1.15;letter-spacing:-.5px}
 .card h3{margin:0 0 16px;font-size:21px}
 .grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
 label{font-size:14px;font-weight:750;display:block;margin:0 0 7px;color:#334155}
-input,select{width:100%;font-size:16px;padding:12px 13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;min-height:46px}
+input,select{
+ width:100%;min-height:48px;padding:12px 13px;border:1px solid #cbd5e1;
+ border-radius:12px;background:#fff;font-size:16px;color:var(--ink)
+}
 button{cursor:pointer}
-.primary,.secondary,.danger{border:0;border-radius:11px;padding:12px 16px;font-weight:750;font-size:15px}
-.primary{background:var(--ink);color:#fff}.secondary{background:#e7ebf0;color:#087cf5}.danger{background:#fee2e2;color:#991b1b}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.primary,.secondary,.danger{min-height:46px;border-radius:12px;padding:11px 16px;font-weight:750;font-size:15px}
+.primary{background:var(--ink);color:#fff;border:1px solid var(--ink)}
+.secondary{background:var(--blueSoft);color:var(--blue);border:1px solid #cfe4ff}
+.danger{background:#fff1f2;color:#b91c1c;border:1px solid #fecdd3}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
 .small{font-size:13px;color:var(--muted)}
-.stat{font-size:25px;font-weight:800}.bad{color:#b91c1c}.warn{color:#b45309}.good{color:#047857}
-.alert{padding:15px 16px;border-radius:13px;background:#fff7ed;color:var(--danger);margin-top:0}
-.ok{padding:15px 16px;border-radius:13px;background:#ecfdf5;color:#065f46;margin-top:0}
-.toast{position:fixed;bottom:18px;left:12px;right:12px;background:var(--ink);color:#fff;padding:12px;border-radius:10px;text-align:center;display:none;z-index:20}
+.stat{font-size:25px;font-weight:800}.bad{color:#b91c1c}.warn{color:#b45309}.good{color:var(--success)}
+.alert{padding:16px;border-radius:14px;background:var(--dangerBg);color:var(--danger);border:1px solid #fed7aa}
+.ok{padding:16px;border-radius:14px;background:var(--successBg);color:#065f46;border:1px solid #a7f3d0}
+.toast{position:fixed;bottom:18px;left:12px;right:12px;background:var(--ink);color:#fff;padding:12px;border-radius:11px;text-align:center;display:none;z-index:20}
 .dayoff{background:#fef2f2}.holiday{background:#eff6ff}
 
-/* Turnistica: each functional area is clearly separated */
+/* TURNISTICA */
 #turnistica .turn-controls{padding:22px}
-#turnistica .turn-controls .month-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:end}
-#turnistica .turn-controls .export-row{margin-top:14px}
-#turnistica .turn-controls .export-row button{width:100%}
-#turnistica .turn-controls .month-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-#turnistica .turn-controls .month-nav button{flex:1 1 180px}
-#turnistica .turn-info{margin:0;color:var(--muted);font-size:14px}
+#turnistica .month-row{
+ display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,220px);
+ gap:14px;align-items:end
+}
+#turnistica .month-row .primary{width:100%}
+#turnistica .export-row{margin-top:12px}
+#turnistica .export-row button{width:100%}
+#turnistica .month-nav{
+ display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px
+}
+#turnistica .month-nav button{width:100%}
+#turnistica .turn-info{
+ margin:16px 0 0;padding:13px 14px;border-radius:12px;
+ background:#f8fafc;border:1px solid #e5eaf0;color:var(--muted);font-size:14px
+}
+#turnistica .turn-layout{
+ display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch
+}
+#turnistica .turn-layout>.card{margin:0;min-height:118px}
 #summary:empty,#diagnostics:empty{display:none}
-#summary{min-height:58px}
-#diagnostics{min-height:58px}
-#monthTitle{font-size:23px;margin-bottom:16px}
+#summary,#diagnostics{min-height:118px}
+#monthTitle{font-size:23px;margin:0 0 16px}
 #calendar{min-width:1000px}
 
-/* Fabbisogno: spacious requirement cards */
-#fabbisogno .need-card{padding:20px}
-#fabbisogno .need-intro{color:var(--muted);margin:-8px 0 18px}
+/* FABBISOGNO */
+#fabbisogno .need-card{padding:22px}
+#fabbisogno .need-intro{
+ margin:-6px 0 20px;padding:13px 14px;border-radius:12px;
+ background:#f8fafc;border:1px solid #e5eaf0;color:var(--muted);font-size:14px
+}
 #fabbisogno .scroll{overflow:visible}
-#fabbisogno table{min-width:0}
-#fabbisogno th,#fabbisogno td{padding:10px 8px}
-#fabbisogno td{vertical-align:middle}
-#fabbisogno .actions{margin-top:18px}
+#fabbisogno table{min-width:0;border-collapse:separate;border-spacing:0 12px}
+#fabbisogno thead th{
+ background:#f7f9fc;color:#334155;border:0;padding:11px 12px;font-size:14px
+}
+#fabbisogno tbody tr{background:#fff}
+#fabbisogno tbody td{
+ padding:10px 10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);vertical-align:middle
+}
+#fabbisogno tbody td:first-child{border-left:1px solid var(--line);border-radius:13px 0 0 13px}
+#fabbisogno tbody td:last-child{border-right:1px solid var(--line);border-radius:0 13px 13px 0}
+#fabbisogno .actions{margin-top:16px}
+#fabbisogno .actions .primary{background:#087cf5;border-color:#087cf5}
 
-/* Other tables */
+/* TABLES */
 .scroll{overflow:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:950px}
 th,td{padding:10px 8px;border-bottom:1px solid #e5e7eb;text-align:left}
 th{background:#f8fafc;font-weight:750}
 
-@media(min-width:900px){
-  #turnistica .turn-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
-  #turnistica .turn-layout>.card{margin-bottom:0}
-  #turnistica .calendar-card{grid-column:1/-1;margin-top:18px}
-  #fabbisogno .need-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-}
+/* OTHER SECTIONS */
+#dipendenti .card,#turni .card,#assenze .card,#impostazioni .card{max-width:100%}
 
 @media(max-width:899px){
-  main{padding:12px}
-  .card{padding:16px;margin-bottom:14px;border-radius:16px}
-  .card h2{font-size:25px;margin-bottom:18px}
-  #turnistica .turn-controls .month-row{grid-template-columns:1fr}
-  #turnistica .turn-controls .month-row .primary{width:100%}
-  #turnistica .turn-layout>.card{margin-bottom:14px}
-  #fabbisogno .scroll{overflow:visible}
-  #fabbisogno table,#fabbisogno tbody{display:block;width:100%}
-  #fabbisogno thead{display:none}
-  #fabbisogno tr{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:13px;
-    margin-bottom:12px;
-  }
-  #fabbisogno td{display:block;border:0;padding:0}
-  #fabbisogno td:nth-child(3),#fabbisogno td:nth-child(4){grid-column:1/-1}
-  #fabbisogno td:nth-child(5){grid-column:1/-1;text-align:right;margin-top:2px}
-  #fabbisogno td:before{display:block;font-size:12px;font-weight:750;color:var(--muted);margin:0 0 4px}
-  #fabbisogno td:nth-child(1):before{content:"Inizio"}
-  #fabbisogno td:nth-child(2):before{content:"Fine"}
-  #fabbisogno td:nth-child(3):before{content:"Ruolo"}
-  #fabbisogno td:nth-child(4):before{content:"Minimo"}
-  #fabbisogno td:nth-child(5):before{content:""}
-  #fabbisogno input{min-height:44px}
+ main{padding:12px}
+ .card{padding:16px;margin-bottom:14px;border-radius:16px}
+ .card h2{font-size:25px;margin-bottom:18px}
+ #turnistica .month-row{grid-template-columns:1fr!important}
+ #turnistica .turn-layout{grid-template-columns:1fr;gap:14px}
+ #turnistica .turn-layout>.card{min-height:0}
+ #turnistica .month-nav{grid-template-columns:1fr 1fr}
+ #fabbisogno .scroll{overflow:visible}
+ #fabbisogno table,#fabbisogno tbody{display:block;width:100%}
+ #fabbisogno thead{display:none}
+ #fabbisogno tr{
+   display:grid;grid-template-columns:1fr 1fr;gap:12px;
+   background:#fff;border:1px solid var(--line);border-radius:14px;
+   padding:14px;margin-bottom:12px
+ }
+ #fabbisogno td{
+   display:block!important;border:0!important;border-radius:0!important;
+   padding:0!important
+ }
+ #fabbisogno td:nth-child(3),#fabbisogno td:nth-child(4),#fabbisogno td:nth-child(5){grid-column:1/-1}
+ #fabbisogno td:before{
+   display:block;font-size:12px;font-weight:750;color:var(--muted);margin-bottom:5px
+ }
+ #fabbisogno td:nth-child(1):before{content:"Inizio"}
+ #fabbisogno td:nth-child(2):before{content:"Fine"}
+ #fabbisogno td:nth-child(3):before{content:"Ruolo"}
+ #fabbisogno td:nth-child(4):before{content:"Numero minimo"}
+ #fabbisogno td:nth-child(5):before{content:""}
+ #fabbisogno td:nth-child(5){text-align:right}
+ #fabbisogno input{min-height:46px}
+ .actions{grid-template-columns:1fr}
 }
-
 @media(max-width:520px){
-  header{padding:15px 16px}
-  header h1{font-size:22px}
-  nav{padding:9px}
-  nav button{padding:11px 14px;font-size:14px}
-  .actions>*{flex:1 1 100%}
-  #turnistica .turn-controls .month-nav button{flex:1 1 100%}
+ header{padding:16px}
+ header h1{font-size:22px}
+ nav{padding:9px}
+ nav button{height:44px;padding:0 15px;font-size:14px}
+ #turnistica .month-nav{grid-template-columns:1fr}
+ #turnistica .turn-info{font-size:13px}
 }
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"></head>
 <body>
-<header><h1>Turnistica Pro</h1><small>v6.6 • fabbisogno operativo</small></header>
+<header><h1>Turnistica Pro</h1><small>v6.7 • layout ordinato</small></header>
 <nav id="nav">
 <button class="active" data-v="turnistica">Turnistica</button><button data-v="dipendenti">Dipendenti</button><button data-v="assenze">Assenze</button><button data-v="turni">Turni</button><button data-v="fabbisogno">Fabbisogno</button><button data-v="impostazioni">Impostazioni</button>
 </nav>
@@ -177,7 +209,7 @@ th{background:#f8fafc;font-weight:750}
 <div><label>Riposo minimo tra turni (ore)</label><input id="rest" type="number" min="0" max="24" step=".5"></div>
 </div><div class="actions"><button class="primary" id="saveSettings">Salva</button></div></div>
 <div class="card"><h3>Regole v5</h3><ul><li>Ferie/permessi bloccano automaticamente l'assegnazione.</li><li>Le note "no domenica" e "no sabato" vengono rispettate.</li><li>Il generatore cerca di non superare le ore contrattuali.</li><li>Il generatore cerca di distribuire mattine e pomeriggi.</li><li>Controlla il riposo minimo tra giorni consecutivi.</li></ul></div></section>
-<div class="card"><div class="small">Turnistica Pro v6.6.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
+<div class="card" style="margin-top:4px"><div class="small">Turnistica Pro v6.7.1 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
 <script>
 const KEY="turnistica_pro_v5";
 const DEF={employees:[
