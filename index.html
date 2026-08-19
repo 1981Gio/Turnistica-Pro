@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#111827">
-<title>Turnistica Pro v11.0</title>
+<title>Turnistica Pro v12.0</title>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -137,9 +137,244 @@ button{font-weight:700}
   .v11-dashboard{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 
+
+/* ===== Turnistica Pro v12 — layout iOS uniforme ===== */
+:root{
+  --v12-gap:16px;
+  --v12-radius:18px;
+  --v12-field:#ffffff;
+  --v12-soft:#f7f9fc;
+}
+
+/* Spaziatura generale: niente elementi addossati */
+main{max-width:1120px;padding:18px 18px 118px}
+.view > .card{margin-bottom:18px}
+.card{padding:22px;border-radius:22px}
+.card + .card{margin-top:18px}
+.section-head{gap:12px;margin-bottom:22px}
+.section-head h2{line-height:1.15}
+
+/* Campi: sempre separati, allineati e con dimensioni coerenti */
+.grid{gap:16px}
+.grid > div{min-width:0}
+input,select{
+  min-height:52px;
+  border-radius:15px;
+  padding:12px 15px;
+  width:100%;
+}
+label{margin-bottom:8px}
+
+/* Bottoni: stessa altezza, larghezza e ritmo visivo */
+.actions{
+  gap:14px;
+  margin-top:20px;
+}
+.actions > *{min-height:52px;width:100%;margin:0}
+.primary,.secondary,.danger{
+  min-height:52px;
+  border-radius:15px;
+}
+.primary{box-shadow:0 5px 14px rgba(22,119,242,.14)}
+
+/* Dashboard / riquadri informativi */
+.v11-dashboard{gap:14px}
+.v11-kpi{
+  min-height:112px;
+  padding:16px;
+  border-radius:17px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.v11-actions{gap:14px}
+.v11-help{padding:14px 16px;border:1px solid #e5eaf1;border-radius:15px;background:#f8fafc}
+
+/* Turnistica: mese, azioni e navigazione sempre in colonna su mobile */
+#turnistica .turn-controls{padding:22px}
+#turnistica .month-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:16px;
+  align-items:stretch;
+}
+#turnistica .month-row > div,
+#turnistica .month-row > button,
+#turnistica .export-row,
+#turnistica .month-nav,
+#turnistica .turn-info{width:100%;max-width:100%}
+#turnistica .export-row{margin-top:14px}
+#turnistica .month-nav{margin-top:14px;gap:14px}
+#turnistica .month-nav button{min-height:52px}
+#monthTitle{
+  min-height:52px;
+  margin:0 0 18px;
+  border-radius:15px;
+  background:#f8fafc;
+}
+
+/* Editor dipendenti e turni: una card per elemento, con griglia pulita */
+#employeeList,#shiftList{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+#employeeList .card,#shiftList .card{
+  margin:0;
+  padding:18px;
+  border-radius:18px;
+  box-shadow:none;
+}
+#employeeList .actions,#shiftList .actions{margin-top:18px}
+#employeeList .grid,#shiftList .grid{gap:16px}
+
+/* Fabbisogno: ogni requisito è un riquadro autonomo */
+#fabbisogno .need-card{padding:22px}
+#fabbisogno .scroll{margin-top:4px}
+#fabbisogno tbody{display:block}
+#fabbisogno tbody tr{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:14px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+}
+#fabbisogno tbody td{
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  min-width:0;
+}
+#fabbisogno tbody td:nth-child(3){grid-column:1/-1}
+#fabbisogno tbody td:nth-child(4){grid-column:1/-1}
+#fabbisogno tbody td:nth-child(5){grid-column:1/-1;text-align:right}
+#fabbisogno tbody td:before{
+  display:block;
+  font-size:13px;
+  font-weight:750;
+  color:var(--muted);
+  margin:0 0 7px;
+}
+#fabbisogno tbody td:nth-child(1):before{content:"Inizio"}
+#fabbisogno tbody td:nth-child(2):before{content:"Fine"}
+#fabbisogno tbody td:nth-child(3):before{content:"Ruolo"}
+#fabbisogno tbody td:nth-child(4):before{content:"Numero minimo"}
+
+/* Assenze: niente tabella che sborda. Ogni assenza diventa una scheda. */
+#assenze .scroll{overflow:visible;margin-top:18px}
+#assenze table,#assenze tbody,#assenze tr{display:block;width:100%}
+#assenze thead{display:none}
+#assenze tbody tr{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  padding:16px;
+  margin-bottom:14px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+}
+#assenze tbody td{
+  display:block;
+  min-width:0;
+  padding:0;
+  border:0;
+}
+#assenze tbody td:nth-child(1){grid-column:1/-1}
+#assenze tbody td:nth-child(4){grid-column:1/-1}
+#assenze tbody td:nth-child(5){grid-column:1/-1}
+#assenze tbody td:nth-child(6){grid-column:1/-1;text-align:right}
+#assenze tbody td:before{
+  display:block;
+  font-size:13px;
+  font-weight:750;
+  color:var(--muted);
+  margin:0 0 7px;
+}
+#assenze tbody td:nth-child(1):before{content:"Dipendente"}
+#assenze tbody td:nth-child(2):before{content:"Dal"}
+#assenze tbody td:nth-child(3):before{content:"Al"}
+#assenze tbody td:nth-child(4):before{content:"Tipo"}
+#assenze tbody td:nth-child(5):before{content:"Nota"}
+
+/* Impostazioni: due campi affiancati solo quando c'è spazio */
+#impostazioni .grid{gap:16px}
+#impostazioni .card{margin-bottom:18px}
+
+/* Tabelle calendario: il calendario può scorrere orizzontalmente, senza comprimere i dati */
+.calendar-card{overflow:hidden}
+.calendar-card .scroll{
+  overflow-x:auto;
+  overflow-y:hidden;
+  border-radius:15px;
+  -webkit-overflow-scrolling:touch;
+}
+#calendar{min-width:900px}
+
+/* Navigazione superiore e inferiore */
+nav#nav{padding:10px 14px;gap:12px}
+nav#nav button{
+  min-width:112px;
+  height:50px;
+  border-radius:16px;
+}
+.bottom-nav{
+  left:12px;right:12px;bottom:12px;
+  height:72px;border-radius:21px;
+  padding:7px;
+}
+.bottom-nav button{min-width:0}
+
+/* Footer */
+.footer-card{margin-top:18px!important;padding:17px 20px}
+
+/* Desktop: card interne centrate e non eccessivamente larghe */
+@media(min-width:721px){
+  #turnistica .turn-controls,
+  #dipendenti > .card,
+  #assenze > .card,
+  #turni > .card,
+  #fabbisogno > .card,
+  #impostazioni > .card{max-width:100%}
+}
+
+/* iPhone: tutto centrato e leggibile */
+@media(max-width:720px){
+  main{padding:12px 12px 118px}
+  .card{padding:18px;border-radius:20px}
+  .section-head{align-items:flex-start}
+  .section-head h2{font-size:25px}
+  .g2,.g3{grid-template-columns:1fr}
+  .actions{grid-template-columns:1fr}
+  .v11-dashboard{grid-template-columns:1fr 1fr;gap:12px}
+  .v11-kpi{min-height:104px;padding:13px}
+  #turnistica .month-row{grid-template-columns:1fr}
+  #turnistica .month-nav{grid-template-columns:1fr 1fr}
+  #fabbisogno tbody tr,
+  #assenze tbody tr{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:430px){
+  main{padding-left:10px;padding-right:10px}
+  .card{padding:16px;border-radius:18px}
+  .v11-dashboard{grid-template-columns:1fr 1fr}
+  .v11-kpi .kpi-value{font-size:23px}
+  #turnistica .month-nav{grid-template-columns:1fr}
+  #assenze tbody tr,
+  #fabbisogno tbody tr{grid-template-columns:1fr}
+  #assenze tbody td,
+  #fabbisogno tbody td{grid-column:1/-1!important}
+  .bottom-nav{left:8px;right:8px;bottom:8px}
+}
+
 </style><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg"></head>
 <body>
-<header><h1>Turnistica Pro</h1><small>v11.0 • look app</small><div class="header-actions"><button class="icon-btn" aria-label="Backup" onclick="backupData()"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 14a4 4 0 0 0 0 8h12a4 4 0 0 0 0-8h-.4A6 6 0 0 0 5 14Z"/></svg></button><button class="icon-btn" aria-label="Aiuto" onclick="toast('Turnistica Pro v11.0 • dati salvati sul dispositivo')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 1 1 4.1 1.7c-1.1 1.1-1.8 1.4-1.8 3M12 17h.01"/></svg></button><button class="icon-btn" aria-label="Impostazioni" onclick="show('impostazioni')"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19 13 .1-2-1.8-.7a6.5 6.5 0 0 0-.7-1.7l.8-1.7-1.5-1.5-1.7.8a6.5 6.5 0 0 0-1.7-.7L12 3.7h-2l-.5 1.8a6.5 6.5 0 0 0-1.7.7l-1.7-.8L4.6 7l.8 1.7a6.5 6.5 0 0 0-.7 1.7l-1.8.7v2l1.8.5c.2.6.4 1.2.7 1.7l-.8 1.7 1.5 1.5 1.7-.8c.5.3 1.1.5 1.7.7l.5 1.8h2l.5-1.8c.6-.2 1.2-.4 1.7-.7l1.7.8 1.5-1.5-.8-1.7c.3-.5.5-1.1.7-1.7L19 13Z"/></svg></button></div></header>
+<header><h1>Turnistica Pro</h1><small>v12.0 • look app</small><div class="header-actions"><button class="icon-btn" aria-label="Backup" onclick="backupData()"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4M5 14a4 4 0 0 0 0 8h12a4 4 0 0 0 0-8h-.4A6 6 0 0 0 5 14Z"/></svg></button><button class="icon-btn" aria-label="Aiuto" onclick="toast('Turnistica Pro v12.0 • dati salvati sul dispositivo')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.4 2.4 0 1 1 4.1 1.7c-1.1 1.1-1.8 1.4-1.8 3M12 17h.01"/></svg></button><button class="icon-btn" aria-label="Impostazioni" onclick="show('impostazioni')"><svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19 13 .1-2-1.8-.7a6.5 6.5 0 0 0-.7-1.7l.8-1.7-1.5-1.5-1.7.8a6.5 6.5 0 0 0-1.7-.7L12 3.7h-2l-.5 1.8a6.5 6.5 0 0 0-1.7.7l-1.7-.8L4.6 7l.8 1.7a6.5 6.5 0 0 0-.7 1.7l-1.8.7v2l1.8.5c.2.6.4 1.2.7 1.7l-.8 1.7 1.5 1.5 1.7-.8c.5.3 1.1.5 1.7.7l.5 1.8h2l.5-1.8c.6-.2 1.2-.4 1.7-.7l1.7.8 1.5-1.5-.8-1.7c.3-.5.5-1.1.7-1.7L19 13Z"/></svg></button></div></header>
 <nav id="nav">
 <button class="active" data-v="turnistica"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M8 14h3M8 17h3M14 14h3M14 17h3"/></svg></span>Turnistica</button>
 <button data-v="dipendenti"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c.5-3.3 2.5-5 6-5s5.5 1.7 6 5M16 5.5a3 3 0 0 1 0 5.8M17 15c2.3.4 3.5 2 4 5"/></svg></span>Dipendenti</button>
@@ -227,7 +462,7 @@ button{font-weight:700}
 <div><label>Riposo minimo tra turni (ore)</label><input id="rest" type="number" min="0" max="24" step=".5"></div>
 </div><div class="actions"><button class="primary" id="saveSettings">Salva</button></div></div>
 <div class="card"><div class="section-head"><div class="section-icon"><svg viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v5h4M10 13h6M10 17h6"/></svg></div><h3>Regole generatore</h3></div><ul class="rules-list"><li>Ferie/permessi bloccano automaticamente l'assegnazione.</li><li>Le note "no domenica" e "no sabato" vengono rispettate.</li><li>Il generatore cerca di non superare le ore contrattuali.</li><li>Il generatore distribuisce i turni cercando di evitare ripetizioni consecutive.</li><li>Controlla il riposo minimo tra giorni consecutivi.</li></ul></div></section>
-<div class="card footer-card"><div class="small"><span class="nav-icon" style="color:var(--blue)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></svg></span>Turnistica Pro v11.0 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
+<div class="card footer-card"><div class="small"><span class="nav-icon" style="color:var(--blue)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></svg></span>Turnistica Pro v12.0 • dati salvati sul dispositivo</div></div></main><div id="toast" class="toast"></div>
 <div class="bottom-nav" id="bottomNav">
 <button data-v="turnistica" class="active"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span>Turnistica</span></button>
 <button data-v="dipendenti"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c.5-3.3 2.5-5 6-5s5.5 1.7 6 5M16 5.5a3 3 0 0 1 0 5.8M17 15c2.3.4 3.5 2 4 5"/></svg><span>Dipendenti</span></button>
@@ -238,7 +473,7 @@ button{font-weight:700}
 </div>
 <script>
 const KEY="turnistica_pro_v5";
-const APP_VERSION="10.1";
+const APP_VERSION="12.0";
 const DEF={employees:[
 {name:"A",role:"Responsabile",hours:"",notes:""},{name:"B",role:"Barista",hours:"",notes:""},{name:"C",role:"Sala",hours:"",notes:""},
 {name:"D",role:"Barista",hours:"",notes:""},{name:"E",role:"Sala",hours:"",notes:""},{name:"F",role:"Cuoco",hours:"",notes:""}],
@@ -497,8 +732,8 @@ $("month").value=localISO(new Date()).slice(0,7);loadSettings();renderMonth();
 
   const backup=q("#v11Backup");
   if(backup) backup.addEventListener("click",()=>{
-    const payload={version:"11.0",createdAt:new Date().toISOString(),localStorage:getStore()};
-    download("Turnistica-Pro-backup-v11.json",JSON.stringify(payload,null,2),"application/json");
+    const payload={version:"12.0",createdAt:new Date().toISOString(),localStorage:getStore()};
+    download("Turnistica-Pro-backup-v12.json",JSON.stringify(payload,null,2),"application/json");
   });
 
   const restore=q("#v11Restore"), file=q("#v11RestoreFile");
